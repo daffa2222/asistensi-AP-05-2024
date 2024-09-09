@@ -10,13 +10,3 @@ rekomendasi_hasil = rekomendasi.get(True)
 
 print(f"perubahan persentase harga saham : {persentase_perubahan:.2f}%")
 print(f"Rekomendasi investasi : {rekomendasi_hasil}")
-
-# n = int(input("Masukkan bilangan bulat n : "))
-# x = "ganjil = "
-# for i in range(1, n + 1):
-#   if i % 2 != 0:
-#       x +=f"{i}, " 
-      
-# o_g = x.rstrip (", ")
-
-# print(o_g)
