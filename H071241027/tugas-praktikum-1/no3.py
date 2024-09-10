@@ -1,3 +1,4 @@
+print("Konversi detik ke jam")
 total_detik = int(input("Masukkan jumlah detik : "))
 
 jam = total_detik // 3600
