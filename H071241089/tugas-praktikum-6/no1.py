@@ -1,122 +1,181 @@
 inventory = {
-    "gelas": 2,
-    "piring": 10,
-    "mangkuk": 21
+    "gelas": {
+        "id": "001",
+        "jumlah": 10,
+        "harga": 10000
+    },
+    "sendok": {
+        "id": "002",
+        "jumlah": 3,
+        "harga": 4000
+    }
 }
 
-def hapusBarang(inventory: dict, namaBarang):
-    try:
-        del inventory[namaBarang]
+def handleInput(pesanInput, tipe):
+    while True:
+        try:
+            fieldInput = tipe(input(pesanInput))
+            return fieldInput
+        except ValueError:
+            print("Input tidak valid")
+
+def tingkatkanId(inventory):
+    idTerakhir = int(inventory[list(inventory)[-1]]['id'])
+    idSekarang = str(idTerakhir  + 1)
+    return idSekarang.rjust(3, "0")
+
+def tampilkanBarang(inventory):
+    print("------------------------------------")
+    print("            Daftar Barang           ")
+    for temp in inventory:
+        print("------------------------------------")
+        print(f"Nama Barang : {temp}")
+        print(f"Id : {inventory[temp]["id"]}")
+        print(f"Jumlah : {inventory[temp]["jumlah"]}")
+        print(f"Harga : {inventory[temp]["harga"]}")
+    print("------------------------------------")
+
+def inputBarang(inventory):
+    namaBarang = handleInput("Input Nama Barang : ", str)
+    if namaBarang not in inventory:
+        id = tingkatkanId(inventory)
+        jumlah = handleInput("Masukkan Jumlah : ", int)
+        if jumlah < 1:
+            print("Jumlah tidak boleh kurang dari 0")
+            jumlah = handleInput("Masukkan Jumlah : ", int)
+        harga = handleInput("Masukkan Harga : ", int)
+        if harga < 0:
+            print("Harga tidak boleh kurang dari 0")
+            harga = handleInput("Masukkan Harga : ", int)
+            
+        inventory[namaBarang] = {
+            "id": id,
+            "jumlah": jumlah,
+            "harga": harga
+        }
+
         return inventory
-    except Exception as e:
-        return 0
 
-def updateBarang(inventory: dict, namaBarang, jumlah):
-    try:
-        inventory[namaBarang] = jumlah
-        return inventory
-    except Exception as e:
-            return e
-        
-def tampilkanInventory(inventory):
-    print("=================================")
-    print("            Inventory            ")
-    for i in inventory:
-        print(f"{i} : {inventory[i]}")
-    print("=================================")
-   
+def updateBarang(inventory, idBarang):
+    barangDitemukan = False
+    for temp in inventory:
+        if inventory[temp]["id"] == idBarang:
+            barangDitemukan = True
 
-def cariBarang(inventory, namaBarang):
-    try:
-        return inventory[namaBarang]
-    except Exception as e:
-        print(e)
-        return 0
+            nama = handleInput("Update Nama : ", str)
+            if nama == "":
+                print("Nama tidak boleh string kosong")
+                nama = handleInput("Update Nama : ", str)
+            jumlah = handleInput("Update Jumlah : ", int)
+            if jumlah < 0:
+                print("Jumlah tidak boleh kurang dari 0")
+                jumlah = handleInput("Update Jumlah : ", int)
+            harga = handleInput("Update Harga : ", int)
+            if harga < 0:
+                print("Harga tidak boleh kurang dari 0")
+                harga = handleInput("Update Harga : ", int)
+                
+            inventory[nama] = inventory[temp]
+            inventory[nama]["jumlah"] = jumlah
+            inventory[nama]["harga"] = harga
 
-def inputBarang(inventory, namaBarang, jumlah: int):
-    if namaBarang in inventory:
-        inventory[namaBarang] += jumlah
-    else:
-        inventory[namaBarang] = jumlah    
+            del inventory[temp]
+            print("Berhasil update barang")
+            return inventory
+                
+    if not barangDitemukan:
+        return "Barang tidak ditemukan"
 
-    return inventory
+def cariBarang(inventory, idBarang):
+    barangDitemukan = False
+    for temp in inventory:
+        if inventory[temp]["id"] == idBarang:
+            barangDitemukan = True
+
+            print("------------------------------------")
+            print("           Barang Ditemukan         ")
+            print("------------------------------------")
+            print(f" Nama Barang : {temp}")
+            print(f" Id : {inventory[temp]["id"]}")
+            print(f" Jumlah : {inventory[temp]["jumlah"]}")
+            print(f" Harga : {inventory[temp]["harga"]}")
+            print("------------------------------------")
+            
+    if not barangDitemukan:
+        print("Barang tidak ditemukan")
+
+def hapusBarang(inventory, idBarang):
+    barangDitemukan = False
+    for temp in inventory:
+        if inventory[temp]["id"] == idBarang:
+            barangDitemukan = True
+            del inventory[temp]
+            return inventory
+            
+    if not barangDitemukan:
+        return "Barang tidak ditemukan"
 
 while True:
-    print("=================================")
-    print("Selamat Data di Program Inventory")
-    print("=================================")
+    print()
+    print("===================================")
+    print("Selamat Datang di Program Inventory")
+    print("===================================")
     print("1. Menambah Barang")
     print("2. Menghapus Barang")
     print("3. Menampilkan Daftar Barang")
     print("4. Mencari Barang")
     print("5. Mengupdate Data Barang")
     print("0. Stop")
-    print("=================================")
-    opsi = int(input("Pilih Opsi : "))
-    
-    operasi = 1
+    print("===================================")
+    opsi = handleInput("Pilih Opsi : ", int)
 
-    if opsi in range(1, 6):
-        if opsi != 3:
-            print("=================================")
-            if operasi == 1:
-                print("            Inventory Awal            ")
-            else:
-                print("            Inventory            ")
-            for i in inventory:
-                print(f"{i} : {inventory[i]}")
-            print("=================================")
-
-    match opsi:
-        case 0:
-            break
-        case 1:
-            print("------- Menambah barang -------")
-            namaBarang = input("Nama Barang : ")
-            jumlahBarang = int(input("Jumlah Barang : "))
-
-            if jumlahBarang < 1:
-                print("Penambahan barang tidak boleh kurang dari 1")
-            else:
-                inventory = inputBarang(inventory, namaBarang, jumlahBarang)
-                tampilkanInventory(inventory)
-        case 2:
-            print("------- Menghapus barang ------")
-            namaBarang = input("Nama Barang : ")
-            res = hapusBarang(inventory, namaBarang)
-            if res == 0:
-                print("Barang tidak ditemukan")
-            else:
-                tampilkanInventory(inventory)
-        case 3:
-            tampilkanInventory(inventory)
-        case 4:
-            print("-------- Mencari Barang -------")
-            namaBarang = input("Nama Barang : ")
-            barang = cariBarang(inventory, namaBarang)
-            if barang == 0:
-                print("Barang tidak ditemukan")
-            else:
-                print("=================================")
-                print(f"{namaBarang} : {barang}")
-        case 5:
-            print("-------- Update Barang --------")
-            namaBarang = input("Nama Barang : ")
-            if namaBarang not in inventory:
-                print("Barang tidak ditemukan")
-            else:
-                jumlahBarang = int(input("Jumlah Barang : "))
-                if jumlahBarang < 0:
-                    print("Jumlah barang tidak boleh kurang dari 0")
-                else:
-                    inventory = updateBarang(inventory, namaBarang, jumlahBarang)
-                    tampilkanInventory(inventory)
-        case _:
-            print("Opsi tidak valid")
-
-    konfirmasi = input("Masi ingin melanjutkan (y/t) : ").lower()
-
-    operasi += 1
-
-    if konfirmasi != "y":
+    if opsi == 0:
         break
+    elif opsi not in range(1, 6):
+        continue
+    else: 
+        if opsi not in range(3,5):
+            tampilkanBarang(inventory)
+        
+    match opsi:
+        case 1:
+            print("=================================")
+            print("         Menambah Barang         ")
+            print("=================================")
+            res = inputBarang(inventory)
+            if type(res) == dict:
+                inventory = res
+                tampilkanBarang(inventory)
+            else:
+                print(res)
+        case 2:
+            print("=================================")
+            print("         Hapus Barang            ")
+            print("=================================")
+            idBarang = input("Masukkan id : ")
+            res = hapusBarang(inventory, idBarang)
+            if type(res) == dict:
+                inventory = res
+                tampilkanBarang(inventory)
+            else:
+                print(res)
+        case 3:
+            tampilkanBarang(inventory)
+        case 4:
+            print("=================================")
+            print("         Mencari Barang          ")
+            print("=================================")
+            idBarang = input("Masukkan id : ")
+            cariBarang(inventory, idBarang)
+        case 5:
+            print("=================================")
+            print("         Update Barang          ")
+            print("=================================")
+            idBarang = input("Masukkan id : ")
+            res = updateBarang(inventory, idBarang)
+            if type(res) == dict:
+                inventory = res
+            else:
+                print(res)
+        case _:
+            continue
